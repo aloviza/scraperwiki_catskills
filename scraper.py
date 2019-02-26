@@ -23,4 +23,4 @@ def get_google_new_results( term, count ):
 items = get_google_new_results( 'catksill+mountains', 9 )
 # items is a list where each element is a tuple (title, link,)
 for title,link in items:
-    print title, ' ', link
+    print title, 'catskill+mountains', link
