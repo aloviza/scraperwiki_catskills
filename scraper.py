@@ -1,24 +1,26 @@
-# This is a template for a Python scraper on morph.io (https://morph.io)
-# including some code snippets below that you should find helpful
+# Code from Ross Jones https://classic.scraperwiki.com/scrapers/google_news_scrape_1/index.html
+# Changed search term and number of results at bottom of code
 
-# import scraperwiki
-# import lxml.html
-#
-# # Read in a page
-# html = scraperwiki.scrape("http://foo.com")
-#
-# # Find something on the page using css selectors
-# root = lxml.html.fromstring(html)
-# root.cssselect("div[align='left']")
-#
-# # Write out to the sqlite database using scraperwiki library
-# scraperwiki.sqlite.save(unique_keys=['name'], data={"name": "susan", "occupation": "software developer"})
-#
-# # An arbitrary query against the database
-# scraperwiki.sql.select("* from data where 'name'='peter'")
+import urllib2
+from xml.dom.minidom import parseString
 
-# You don't have to do things with the ScraperWiki and lxml libraries.
-# You can use whatever libraries you want: https://morph.io/documentation/python
-# All that matters is that your final data is written to an SQLite database
-# called "data.sqlite" in the current working directory which has at least a table
-# called "data".
+def get_google_new_results( term, count ):
+    results = []
+    obj = parseString( urllib2.urlopen('http://news.google.com/news?q=%s&output=rss' % term).read() )
+
+    items = obj.getElementsByTagName('item') # Get each item
+    for item in items[:count]:
+        t,l = '', ''
+        for node in item.childNodes:
+            if node.nodeName == 'title':
+                t = node.childNodes[0].data
+            elif node.nodeName == 'link':
+                l = node.childNodes[0].data
+        results.append( (t,l) )
+    return results
+
+
+items = get_google_new_results( 'catksill+mountains', 9 )
+# items is a list where each element is a tuple (title, link,)
+for title,link in items:
+    print title, ' ', link
